@@ -28,7 +28,7 @@ type DbInfo struct {
  * This calls flag.Parse(), so define any other program flags before calling this.
  */
 func (dbInfo *DbInfo) Populate() {
-	userDefault := misc.CoalesceStrings(os.Getenv("DBUSER"), "c42ro")
+	userDefault := os.Getenv("DBUSER")
 	hostDefault := misc.CoalesceStrings(os.Getenv("DBHOST"), "localhost")
 	portDefaultStr := misc.CoalesceStrings(os.Getenv("DBPORT"), "5432")
 	passDefault := os.Getenv("PGPASS")
