@@ -59,7 +59,7 @@ func (dbInfo *DbInfo) Populate() {
 		} else {
 			dbInfo.DbPass = PgPassword(dbInfo.DbUser)
             if len(dbInfo.DbPass) == 0 {
-                dbInfo.DbPass = misc.Prompt("Enter password: ")
+                dbInfo.DbPass = misc.PromptPassword("Enter password: ")
             }
 		}
 	}
