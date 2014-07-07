@@ -95,7 +95,7 @@ func (dbInfo *DbInfo) Open() (*sql.DB, error) {
  * Provides a model for adding to your own database executable
  */
 func DbUsage() {
-	fmt.Fprintf(os.Stderr, "usage: %s [-h <string>] [-p <int>] [-d <string>] [-U <string>] [-pw <string>] \n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "usage: %s [-h <host>] [-p <port>] [-d <dbname>] [-U <user>] [-pw <password>] \n", os.Args[0])
 	flag.PrintDefaults()
 	os.Exit(2)
 }
