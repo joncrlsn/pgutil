@@ -59,10 +59,10 @@ func (dbInfo *DbInfo) Populate() {
 	}
 	// the password is a little different because it can also be found in ~/.pgpass
 	if len(dbInfo.DbPass) == 0 {
-		if dbPass == "prompt" {
+		if *dbPass == "prompt" {
 			dbInfo.DbPass = misc.PromptPassword("Enter password: ")
-		} else if len(dbPass) > 1 {
-			dbInfo.DbPass = dbPass
+		} else if len(*dbPass) > 1 {
+			dbInfo.DbPass = *dbPass
 		} else {
 			dbInfo.DbPass = PgPassword(dbInfo.DbUser)
 			if len(dbInfo.DbPass) == 0 {
