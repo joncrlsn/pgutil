@@ -35,11 +35,10 @@ func (dbInfo *DbInfo) Populate() {
 	dbDefault := os.Getenv("PGDATABASE")
 	userDefault := os.Getenv("PGUSER")
 	passDefault := os.Getenv("PGPASSWORD")
-	optionsDefault := os.Getenv("PGOPTIONS")
+	optionsDefault := os.Getenv("PGOPTION")
 
 	// port is a little different because it's an int
 	portDefault, _ := strconv.Atoi(portDefaultStr)
-	fmt.Println("portDefault", portDefault)
 
 	var dbUser = flag.String("U", userDefault, "db user")
 	var dbPass = flag.String("pw", passDefault, "db password")
@@ -81,6 +80,7 @@ func (dbInfo *DbInfo) Populate() {
 	}
 	if len(*dbOptions) > 0 {
 		dbInfo.DbOptions = *dbOptions
+		//fmt.Printf("Set dbInfo.DbOptions to %s\n", dbInfo.DbOptions)
 	}
 }
 
@@ -127,7 +127,7 @@ func PgPassword(user string) string {
 		if strings.Contains(line, ":"+user+":") {
 			fields := strings.Split(line, ":")
 			password := fields[4]
-			fmt.Println("Used password from ~/.pgpass")
+			//fmt.Println("Used password from ~/.pgpass")
 			return password
 		}
 	}
