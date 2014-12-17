@@ -1,7 +1,7 @@
 package pgutil
 
 import "os"
-import "flag"
+import flag "github.com/ogier/pflag"
 import "log"
 import "time"
 import "fmt"
@@ -40,12 +40,15 @@ func (dbInfo *DbInfo) Populate() {
 	// port is a little different because it's an int
 	portDefault, _ := strconv.Atoi(portDefaultStr)
 
-	var dbUser = flag.String("U", userDefault, "db user")
-	var dbPass = flag.String("pw", passDefault, "db password")
-	var dbHost = flag.String("h", hostDefault, "db host")
-	var dbPort = flag.Int("p", portDefault, "db port")
-	var dbName = flag.String("d", dbDefault, "db name")
-	var dbOptions = flag.String("o", optionsDefault, "db options (eg. sslmode=disable)")
+	var dbUser = flag.StringP("username", "U", userDefault, "db user")
+    // dbPass cannot be set via flags because it will most likely be stored in the shell history
+	var dbPass = &passDefault 
+	var dbHost = flag.StringP("host", "h", hostDefault, "db host")
+	var dbPort = flag.IntP("port", "p", portDefault, "db port")
+	var dbName = flag.StringP("dbname", "d", dbDefault, "db name")
+	var dbOptions = flag.StringP("options", "O", optionsDefault, "db options (eg. sslmode=disable)")
+    var noPwPrompt = flag.BoolP("no-password", "w", false, "Never issue a password prompt. If a password is required, no connection can be made")
+    var forcePwPrompt = flag.BoolP("password", "W", false, "Force a password prompt.")
 
 	// This will parse all the flags defined for the program.  Not sure how to get around this.
 	flag.Parse()
@@ -53,22 +56,36 @@ func (dbInfo *DbInfo) Populate() {
 	if len(*dbUser) > 0 {
 		dbInfo.DbUser = *dbUser
 	}
+
 	if len(*dbPass) > 0 {
 		dbInfo.DbPass = *dbPass
 	}
-	// the password is a little different because it can also be found in ~/.pgpass
+
+    if len(*dbName) == 0 {
+        fmt.Fprintln(os.Stderr, "No db name can be found")
+        os.Exit(1)
+    }
+
 	if len(dbInfo.DbPass) == 0 {
-		if *dbPass == "prompt" {
+        if *dbPass == "prompt" || *forcePwPrompt {
+		        if *noPwPrompt {
+                    fmt.Fprintln(os.Stderr, "Password can not be prompted.")
+                    os.Exit(1);
+                }
 			dbInfo.DbPass = misc.PromptPassword("Enter password: ")
-		} else if len(*dbPass) > 1 {
-			dbInfo.DbPass = *dbPass
 		} else {
+            // check ~/.pgpass file
 			dbInfo.DbPass = PgPassword(dbInfo.DbUser)
 			if len(dbInfo.DbPass) == 0 {
+		        if *noPwPrompt {
+                    fmt.Fprintln(os.Stderr, "Password can not be prompted.")
+                    os.Exit(1);
+                }
 				dbInfo.DbPass = misc.PromptPassword("Enter password: ")
 			}
-		}
+        }
 	}
+
 	if len(*dbHost) > 0 {
 		dbInfo.DbHost = *dbHost
 	}
@@ -102,7 +119,7 @@ func (dbInfo *DbInfo) Open() (*sql.DB, error) {
 
 // DbUsage provides a model for adding to your own database executable
 func DbUsage() {
-	fmt.Fprintf(os.Stderr, "usage: %s [-h <host>] [-p <port>] [-d <dbname>] [-U <user>] [-pw <password>] [-o <db option>] \n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "usage: %s [-h <host>] [-p <port>] [-d <dbname>] [-U <user>] [-O <db option>] \n", os.Args[0])
 	flag.PrintDefaults()
 	os.Exit(2)
 }
