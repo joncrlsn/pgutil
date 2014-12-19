@@ -41,14 +41,14 @@ func (dbInfo *DbInfo) Populate() {
 	portDefault, _ := strconv.Atoi(portDefaultStr)
 
 	var dbUser = flag.StringP("username", "U", userDefault, "db user")
-    // dbPass cannot be set via flags because it will most likely be stored in the shell history
-	var dbPass = &passDefault 
+	// dbPass cannot be set via flags because it will most likely be stored in the shell history
+	var dbPass = &passDefault
 	var dbHost = flag.StringP("host", "h", hostDefault, "db host")
 	var dbPort = flag.IntP("port", "p", portDefault, "db port")
 	var dbName = flag.StringP("dbname", "d", dbDefault, "db name")
 	var dbOptions = flag.StringP("options", "O", optionsDefault, "db options (eg. sslmode=disable)")
-    var noPwPrompt = flag.BoolP("no-password", "w", false, "Never issue a password prompt. If a password is required, no connection can be made")
-    var forcePwPrompt = flag.BoolP("password", "W", false, "Force a password prompt.")
+	var noPwPrompt = flag.BoolP("no-password", "w", false, "Never issue a password prompt. If a password is required, no connection can be made")
+	var forcePwPrompt = flag.BoolP("password", "W", false, "Force a password prompt.")
 
 	// This will parse all the flags defined for the program.  Not sure how to get around this.
 	flag.Parse()
@@ -61,29 +61,29 @@ func (dbInfo *DbInfo) Populate() {
 		dbInfo.DbPass = *dbPass
 	}
 
-    if len(*dbName) == 0 {
-        fmt.Fprintln(os.Stderr, "No db name can be found")
-        os.Exit(1)
-    }
+	if len(*dbName) == 0 {
+		fmt.Fprintln(os.Stderr, "No db name can be found")
+		os.Exit(1)
+	}
 
 	if len(dbInfo.DbPass) == 0 {
-        if *dbPass == "prompt" || *forcePwPrompt {
-		        if *noPwPrompt {
-                    fmt.Fprintln(os.Stderr, "Password can not be prompted.")
-                    os.Exit(1);
-                }
+		if *dbPass == "prompt" || *forcePwPrompt {
+			if *noPwPrompt {
+				fmt.Fprintln(os.Stderr, "Password can not be prompted.")
+				os.Exit(1)
+			}
 			dbInfo.DbPass = misc.PromptPassword("Enter password: ")
 		} else {
-            // check ~/.pgpass file
+			// check ~/.pgpass file
 			dbInfo.DbPass = PgPassword(dbInfo.DbUser)
 			if len(dbInfo.DbPass) == 0 {
-		        if *noPwPrompt {
-                    fmt.Fprintln(os.Stderr, "Password can not be prompted.")
-                    os.Exit(1);
-                }
+				if *noPwPrompt {
+					fmt.Fprintln(os.Stderr, "Password can not be prompted.")
+					os.Exit(1)
+				}
 				dbInfo.DbPass = misc.PromptPassword("Enter password: ")
 			}
-        }
+		}
 	}
 
 	if len(*dbHost) > 0 {
