@@ -136,7 +136,7 @@ func PgPassword(user string) string {
 		return ""
 	}
 
-	lines, err := fileutil.ReadLinesArray(pgPassPath)
+	lines, err := fileutil.ReadLinesSlice(pgPassPath)
 	if err != nil {
 		panic(err)
 	}
