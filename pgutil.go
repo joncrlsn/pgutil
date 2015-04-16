@@ -27,9 +27,14 @@ type DbInfo struct {
 	DbOptions string
 }
 
-// Populate populates the database connection info from environment variables or runtime flags.
-// This calls flag.Parse(), so define any other program flags before calling this.
-func (dbInfo *DbInfo) Populate() {
+// Populate populates the database connection info from environment variables
+// or runtime flags. This calls flag.Parse(), so define any other program
+// flags before calling this.
+//
+// It is assumed that -V is the version flag, and -? is the help flag.  These
+// are assumed so we don't continue processing DB flags if one of these is
+// set.
+func (dbInfo *DbInfo) Populate() (verFlag, helpFlag bool) {
 	hostDefault := misc.CoalesceStrings(os.Getenv("PGHOST"), "localhost")
 	portDefaultStr := misc.CoalesceStrings(os.Getenv("PGPORT"), "5432")
 	dbDefault := os.Getenv("PGDATABASE")
@@ -39,6 +44,9 @@ func (dbInfo *DbInfo) Populate() {
 
 	// port is a little different because it's an int
 	portDefault, _ := strconv.Atoi(portDefaultStr)
+
+	flag.BoolVarP(&verFlag, "version", "V", false, "Displays version information")
+	flag.BoolVarP(&helpFlag, "help", "?", false, "Displays usage help")
 
 	var dbUser = flag.StringP("username", "U", userDefault, "db user")
 	// dbPass cannot be set via flags because it will most likely be stored in the shell history
@@ -52,6 +60,10 @@ func (dbInfo *DbInfo) Populate() {
 
 	// This will parse all the flags defined for the program.  Not sure how to get around this.
 	flag.Parse()
+
+	if verFlag || helpFlag {
+		return
+	}
 
 	if len(*dbUser) > 0 {
 		dbInfo.DbUser = *dbUser
@@ -99,6 +111,8 @@ func (dbInfo *DbInfo) Populate() {
 		dbInfo.DbOptions = *dbOptions
 		//fmt.Printf("Set dbInfo.DbOptions to %s\n", dbInfo.DbOptions)
 	}
+
+	return
 }
 
 // ConnectionString returns the string needed by the postgres driver library to connect
