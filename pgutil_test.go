@@ -13,7 +13,7 @@ func init() {
 #hostname:port:database:username:password
 *:*:*:c42:lKj*$hL;(~
 *:*:*:c42ro:himom`, "\n")
-	fileutil.WriteLinesArray(lines, testFileName)
+	fileutil.WriteLinesSlice(lines, testFileName)
 }
 
 func Test_FindPgPassword(t *testing.T) {

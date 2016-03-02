@@ -109,7 +109,7 @@ func (dbInfo *DbInfo) Populate() (verFlag, helpFlag bool) {
 	}
 	if len(*dbOptions) > 0 {
 		dbInfo.DbOptions = *dbOptions
-		//fmt.Printf("Set dbInfo.DbOptions to %s\n", dbInfo.DbOptions)
+		//fmt.Printf("Set DbInfo.DbOptions to %s\n", dbInfo.DbOptions)
 	}
 
 	return
@@ -117,7 +117,7 @@ func (dbInfo *DbInfo) Populate() (verFlag, helpFlag bool) {
 
 // ConnectionString returns the string needed by the postgres driver library to connect
 func (dbInfo *DbInfo) ConnectionString() string {
-	connString := "user=" + dbInfo.DbUser + " host=" + dbInfo.DbHost + " dbname=" + dbInfo.DbName + " password=" + dbInfo.DbPass
+	connString := fmt.Sprintf("user=%s host=%s port=%v dbname=%s password=%s", dbInfo.DbUser, dbInfo.DbHost, dbInfo.DbPort, dbInfo.DbName, dbInfo.DbPass)
 	if len(dbInfo.DbOptions) > 0 {
 		connString += " " + dbInfo.DbOptions
 	}
