@@ -24,6 +24,7 @@ type DbInfo struct {
 	DbPort    int32
 	DbUser    string
 	DbPass    string
+	DbSchema  string
 	DbOptions string
 }
 
