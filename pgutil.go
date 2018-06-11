@@ -288,6 +288,6 @@ func QueryStrings(db *sql.DB, query string) (chan map[string]string, []string) {
 
 func check(msg string, err error) {
 	if err != nil {
-		log.Fatal("Error "+msg, err)
+		log.Fatal("Error "+msg+": ", err)
 	}
 }
